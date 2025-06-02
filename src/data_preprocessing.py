@@ -60,8 +60,8 @@ def preprocess_all(landmark_dir, output_path):
     df_preprocessed.to_csv(output_path, index=False)
 
 if __name__ == "__main__":
-    input_dir = "data/processed_landmarks"
-    output_file = "data/annotated_data/preprocessed_data.csv"
-    os.makedirs("data/annotated_data", exist_ok=True)
+    input_dir = "c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/processed_landmarks"
+    output_file = "c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/annotated_data/preprocessed_data.csv"
+    os.makedirs("c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/annotated_data", exist_ok=True)
     
     preprocess_all(input_dir, output_file)
