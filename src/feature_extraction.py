@@ -22,39 +22,62 @@ def calculate_angle(a, b, c):
 
 def extract_features_from_landmarks(df):
     """
-    Extrae ángulos y otras características útiles desde un DataFrame con landmarks.
-    Se espera que el DataFrame tenga columnas nombradas como: x0, y0, x1, y1, ..., xN, yN, label
+    Extrae múltiples características (ángulos, inclinaciones, distancias) desde landmarks.
+    Requiere columnas nombradas como x0, y0, x1, y1, ..., xN, yN, y una columna "label".
     """
-    # Número de puntos = número total de columnas (menos 'label') dividido por 2
-    landmark_cols = [col for col in df.columns if col != "label"]
-    num_points = len(landmark_cols) // 2
 
     features = []
 
     for idx, row in df.iterrows():
         row_features = {}
-
-        # Ejemplo: calcular ángulo entre hombro-hiproderecha-piernaderecha
         try:
-            shoulder = (row["x11"], row["y11"])
-            hip = (row["x23"], row["y23"])
-            knee = (row["x25"], row["y25"])
-            angle_hip = calculate_angle(shoulder, hip, knee)
-            row_features["angle_hip"] = angle_hip
-        except:
-            row_features["angle_hip"] = np.nan
+            # ----- Ángulos -----
+            # Cadera derecha (hombro - cadera - rodilla)
+            row_features["angle_hip"] = calculate_angle(
+                (row["x11"], row["y11"]), (row["x23"], row["y23"]), (row["x25"], row["y25"])
+            )
 
-        # Velocidad (diferencia entre puntos consecutivos, si hay frame_id)
-        # Esto es opcional, dependiendo del dataset
-        
-        # Agregar más características aquí...
-        
+            # Rodilla derecha (cadera - rodilla - tobillo)
+            row_features["angle_knee"] = calculate_angle(
+                (row["x23"], row["y23"]), (row["x25"], row["y25"]), (row["x27"], row["y27"])
+            )
+
+            # Codo derecho (hombro - codo - muñeca)
+            row_features["angle_elbow"] = calculate_angle(
+                (row["x11"], row["y11"]), (row["x13"], row["y13"]), (row["x15"], row["y15"])
+            )
+
+            # Hombro derecho (cuello - hombro - codo)
+            row_features["angle_shoulder"] = calculate_angle(
+                (row["x5"], row["y5"]), (row["x11"], row["y11"]), (row["x13"], row["y13"])
+            )
+
+            # ----- Inclinación del tronco -----
+            shoulder_mid = np.mean([row["x11"], row["x12"]]), np.mean([row["y11"], row["y12"]])
+            hip_mid = np.mean([row["x23"], row["x24"]]), np.mean([row["y23"], row["y24"]])
+            inclinacion = np.arctan2(hip_mid[1] - shoulder_mid[1], hip_mid[0] - shoulder_mid[0])
+            row_features["inclinacion_tronco"] = np.degrees(inclinacion)
+
+            # ----- Distancia entre hombros -----
+            dist_hombros = np.linalg.norm(
+                np.array([row["x11"], row["y11"]]) - np.array([row["x12"], row["y12"]])
+            )
+            row_features["dist_hombros"] = dist_hombros
+
+        except KeyError as e:
+            print(f"⚠️ Faltan coordenadas necesarias en la fila {idx}: {e}")
+            continue
+        except Exception as e:
+            print(f"⚠️ Error general en fila {idx}: {e}")
+            continue
+
         row_features["label"] = row["label"]
         features.append(row_features)
 
     df_features = pd.DataFrame(features)
-    df_features = df_features.dropna()  # Eliminar filas con NaN en los ángulos
+    df_features = df_features.dropna()
     return df_features
+
 
 
 def process_and_save(input_csv, output_csv):

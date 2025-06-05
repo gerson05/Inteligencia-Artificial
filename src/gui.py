@@ -10,19 +10,35 @@ import joblib
 
 def extract_pose_features(landmarks):
     """
-    Extrae SOLO el ángulo de la cadera (como en el entrenamiento) a partir de la lista de landmarks (x, y, z, visibility)
+    Extrae varios ángulos articulares desde los landmarks de MediaPipe.
+    Asegúrate de que el modelo fue entrenado con estas mismas features.
     """
-    import numpy as np
+
+    from feature_extraction import calculate_angle
     try:
-        hombro = landmarks[12][:3]
-        cadera = landmarks[24][:3]
-        rodilla = landmarks[26][:3]
-        from feature_extraction import calculate_angle
-        angle_hip = calculate_angle(hombro, cadera, rodilla)
-        return [angle_hip]  # SOLO una feature
+        # Extraer coordenadas (x, y, z) de puntos clave
+        hombro_d = landmarks[12][:3]
+        cadera_d = landmarks[24][:3]
+        rodilla_d = landmarks[26][:3]
+        tobillo_d = landmarks[28][:3]
+
+        codo_d = landmarks[14][:3]
+        muneca_d = landmarks[16][:3]
+
+        cuello = landmarks[0][:3]  # Nose (usado como punto aproximado de cuello)
+
+        # Calcular ángulos
+        angle_hip = calculate_angle(hombro_d, cadera_d, rodilla_d)
+        angle_knee = calculate_angle(cadera_d, rodilla_d, tobillo_d)
+        angle_elbow = calculate_angle(hombro_d, codo_d, muneca_d)
+        angle_shoulder = calculate_angle(cuello, hombro_d, codo_d)
+
+        return [angle_hip, angle_knee, angle_elbow, angle_shoulder]
+
     except Exception as e:
-        print(f"Error extrayendo features: {e}")
+        print(f"⚠️ Error extrayendo features: {e}")
         return None
+
 
 # Cargar modelo y scaler
 model = joblib.load("models/model.pkl")
