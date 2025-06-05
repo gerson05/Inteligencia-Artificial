@@ -89,8 +89,10 @@ def process_and_save(input_csv, output_csv):
 
 
 if __name__ == "__main__":
-    input_path = "c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/annotated_data/preprocessed_data.csv"
-    output_path = "c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/annotated_data/feature_data.csv"
+    input_path = "data/annotated_data/preprocessed_data_fixed.csv"
+
+    output_path = "c:/Users/gdjhb/Downloads/Inteligencia-Artificial/data/annotated_data/feature_data.csv"
+
     process_and_save(input_path, output_path)
 
 
