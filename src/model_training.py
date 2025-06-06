@@ -34,16 +34,62 @@ def train_model(X_train, y_train):
     return clf
 
 
-def evaluate_model(model, X_test, y_test):
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
+import pandas as pd
+
+def evaluate_model(model, X_test, y_test, save_dir="results"):
     """
-    Imprime el reporte de clasificación y matriz de confusión
+    Imprime métricas de evaluación y guarda gráficas en la carpeta de resultados.
     """
+    os.makedirs(save_dir, exist_ok=True)
     y_pred = model.predict(X_test)
+
+    # --- Reporte de clasificación ---
     print("\n📊 Classification Report:")
+    report_dict = classification_report(y_test, y_pred, output_dict=True)
     print(classification_report(y_test, y_pred))
-    
+
+    # --- Matriz de confusión ---
     print("🧩 Confusion Matrix:")
-    print(confusion_matrix(y_test, y_pred))
+    cm = confusion_matrix(y_test, y_pred)
+    print(cm)
+
+    # Heatmap de la matriz de confusión
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+    plt.title("Matriz de Confusión")
+    plt.xlabel("Predicho")
+    plt.ylabel("Real")
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, "confusion_matrix.png"))
+    plt.show()
+
+    # --- F1-score por clase ---
+    df_report = pd.DataFrame(report_dict).transpose()
+    df_report.iloc[:-3][["f1-score"]].plot(
+        kind="bar", legend=False, title="F1-score por clase", figsize=(8, 4), color="#2E86C1"
+    )
+    plt.ylabel("F1-score")
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, "f1_scores.png"))
+    plt.show()
+
+    # --- Importancia de características (Random Forest) ---
+    if hasattr(model, "feature_importances_"):
+        feature_names = [f"F{i}" for i in range(X_test.shape[1])]
+        importances = model.feature_importances_
+        sorted_idx = importances.argsort()[::-1]
+
+        plt.figure(figsize=(8, 5))
+        sns.barplot(x=importances[sorted_idx], y=[feature_names[i] for i in sorted_idx], palette="viridis")
+        plt.title("Importancia de características")
+        plt.xlabel("Importancia")
+        plt.tight_layout()
+        plt.savefig(os.path.join(save_dir, "feature_importance.png"))
+        plt.show()
+
 
 
 def save_model(model, scaler, path_model, path_scaler):
@@ -77,7 +123,8 @@ if __name__ == "__main__":
     model = train_model(X_train, y_train)
 
     # Evaluar modelo
-    evaluate_model(model, X_test, y_test)
+    evaluate_model(model, X_test, y_test, save_dir=os.path.join(project_root, "results"))
+
 
     # Guardar modelo y scaler
     save_model(model, scaler, model_path, scaler_path)
