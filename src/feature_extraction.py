@@ -1,5 +1,6 @@
 # src/feature_extraction.py
 
+import os
 import numpy as np
 import pandas as pd
 
@@ -89,10 +90,9 @@ def process_and_save(input_csv, output_csv):
 
 
 if __name__ == "__main__":
-    input_path = "data/annotated_data/preprocessed_data_fixed.csv"
-
-    output_path = "c:/Users/gdjhb/Downloads/Inteligencia-Artificial/data/annotated_data/feature_data.csv"
+    # Usar rutas relativas al proyecto
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    input_path = os.path.join(project_root, "data", "annotated_data", "preprocessed_data_fixed.csv")
+    output_path = os.path.join(project_root, "data", "annotated_data", "feature_data_detailed.csv")
 
     process_and_save(input_path, output_path)
-
-

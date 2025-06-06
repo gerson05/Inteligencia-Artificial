@@ -60,8 +60,11 @@ def preprocess_all(landmark_dir, output_path):
     df_preprocessed.to_csv(output_path, index=False)
 
 if __name__ == "__main__":
-    input_dir = "c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/processed_landmarks"
-    output_file = "c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/annotated_data/preprocessed_data.csv"
-    os.makedirs("c:/Users/CTecn/Desktop/Inteligencia-Artificial/data/annotated_data", exist_ok=True)
+    # Usar rutas relativas al proyecto
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    input_dir = os.path.join(project_root, "data", "processed_landmarks")
+    output_dir = os.path.join(project_root, "data", "annotated_data")
+    output_file = os.path.join(output_dir, "preprocessed_data.csv")
+    os.makedirs(output_dir, exist_ok=True)
     
     preprocess_all(input_dir, output_file)

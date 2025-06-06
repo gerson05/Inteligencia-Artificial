@@ -21,11 +21,11 @@ def extract_pose_features(landmarks):
         cadera_d = landmarks[24][:3]
         rodilla_d = landmarks[26][:3]
         tobillo_d = landmarks[28][:3]
-
         codo_d = landmarks[14][:3]
         muneca_d = landmarks[16][:3]
-
         cuello = landmarks[0][:3]  # Nose (usado como punto aproximado de cuello)
+        hombro_i = landmarks[11][:3]
+        cadera_i = landmarks[23][:3]
 
         # Calcular ángulos
         angle_hip = calculate_angle(hombro_d, cadera_d, rodilla_d)
@@ -33,7 +33,21 @@ def extract_pose_features(landmarks):
         angle_elbow = calculate_angle(hombro_d, codo_d, muneca_d)
         angle_shoulder = calculate_angle(cuello, hombro_d, codo_d)
 
-        return [angle_hip, angle_knee, angle_elbow, angle_shoulder]
+        # Inclinación del tronco (igual que en feature_extraction.py)
+        shoulder_mid = (
+            (hombro_d[0] + hombro_i[0]) / 2,
+            (hombro_d[1] + hombro_i[1]) / 2
+        )
+        hip_mid = (
+            (cadera_d[0] + cadera_i[0]) / 2,
+            (cadera_d[1] + cadera_i[1]) / 2
+        )
+        inclinacion_tronco = np.degrees(np.arctan2(hip_mid[1] - shoulder_mid[1], hip_mid[0] - shoulder_mid[0]))
+
+        # Distancia entre hombros
+        dist_hombros = np.linalg.norm(np.array(hombro_d[:2]) - np.array(hombro_i[:2]))
+
+        return [angle_hip, angle_knee, angle_elbow, angle_shoulder, inclinacion_tronco, dist_hombros]
 
     except Exception as e:
         print(f"⚠️ Error extrayendo features: {e}")

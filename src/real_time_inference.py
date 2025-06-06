@@ -5,11 +5,11 @@ import mediapipe as mp
 import numpy as np
 import joblib
 import time
-from feature_extraction import extract_pose_features
+from gui import extract_pose_features
 
 # Cargar modelo y scaler entrenado
-model = joblib.load("c:/Users/CTecn/Desktop/Inteligencia-Artificial/models/model.pkl")
-scaler = joblib.load("c:/Users/CTecn/Desktop/Inteligencia-Artificial/models/scaler.pkl")
+model = joblib.load("models/model.pkl")
+scaler = joblib.load("models/scaler.pkl")
 
 # Inicializar MediaPipe Pose
 mp_pose = mp.solutions.pose

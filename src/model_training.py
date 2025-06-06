@@ -58,11 +58,12 @@ def save_model(model, scaler, path_model, path_scaler):
 
 if __name__ == "__main__":
     # Paths
-    data_path = "c:/Users/gdjhb/Downloads/Inteligencia-Artificial/data/annotated_data/feature_data.csv"
-    model_path = "c:/Users/gdjhb/Downloads/Inteligencia-Artificial/models/model.pkl"
-    scaler_path = "c:/Users/gdjhb/Downloads/Inteligencia-Artificial/models/scaler.pkl"
-
-    os.makedirs("models", exist_ok=True)
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    data_path = os.path.join(project_root, "data", "annotated_data", "feature_data_detailed.csv")
+    model_dir = os.path.join(project_root, "models")
+    os.makedirs(model_dir, exist_ok=True)
+    model_path = os.path.join(model_dir, "model.pkl")
+    scaler_path = os.path.join(model_dir, "scaler.pkl")
 
     # Cargar y preparar datos
     X, y, scaler = load_and_prepare_data(data_path)
