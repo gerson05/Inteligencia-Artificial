@@ -3,6 +3,8 @@
 ## Samuel Alvarez - A00394750
 ## Gerson Hurtado - A00394995
 
+## Link al video
+https://www.dropbox.com/scl/fi/8hw4n5xwpfkvlxv9skd34/VIDEOIA_final.mp4?rlkey=8nh4f1u0xhdztxwdmtx0i39fq&st=aevgevx3&dl=0
 
 ## Funcionamiento de la aplicación
 
